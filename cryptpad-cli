@@ -1,0 +1,7 @@
+#!/usr/bin/env nix-shell
+#!nix-shell nix/deps.nix -A python -i python
+
+from pycryptpad_tools.cli import cli
+
+if __name__ == '__main__':
+    cli()
