@@ -1,5 +1,6 @@
 from eliot import log_call
 import os
+import time
 from selenium import webdriver
 from selenium.webdriver.support.expected_conditions import url_contains, \
     presence_of_element_located, text_to_be_present_in_element
@@ -18,6 +19,9 @@ class PadAPI:
         return self
 
     def __exit__(self, type, value, traceback):
+        # Give it some more time to save stuff.
+        # Commands should wait until the content is saved, but just in case...
+        time.sleep(1)
         self.quit()
 
     def start_chrome_driver(self):
