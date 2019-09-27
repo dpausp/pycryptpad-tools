@@ -78,7 +78,7 @@ class PadAPI:
 
     @log_call
     def set_pad_content(self, content):
-        content = content.replace("\n", "\\n")
+        content = content.replace("\n", "\\n").replace('"', r'\"')
         self._switch_to_sbox_iframe()
         self.codemirror_command(f'editor.setValue("{content}");')
         WebDriverWait(self.driver, timeout=60).until(
