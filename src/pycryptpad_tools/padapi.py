@@ -47,7 +47,7 @@ class PadAPI:
         self.driver.switch_to.frame("sbox-iframe")
 
     @log_call
-    def create_pad(self):
+    def create_pad(self, initial_content=""):
         new_code_pad_url = f"{self.base_url}/code"
         self.driver.get(new_code_pad_url)
         WebDriverWait(self.driver, timeout=60).until(url_contains('#'))
@@ -56,6 +56,7 @@ class PadAPI:
             text_to_be_present_in_element((By.CLASS_NAME, 'cp-toolbar-spinner'), "Saved"))
         pad_url = self.driver.current_url
         pad_key = pad_url.split('/')[-2]
+        self.set_pad_content(initial_content)
         return {
             "url": pad_url,
             "key": pad_key,

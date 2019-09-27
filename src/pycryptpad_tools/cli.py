@@ -1,7 +1,7 @@
 import sys
 
 from click import echo, group, option, pass_context
-from eliot import start_task, to_file
+from eliot import start_task, to_file, log_call
 
 from pycryptpad_tools.padapi import PadAPI
 
@@ -17,6 +17,15 @@ def pad_api(ctx):
     return PadAPI(ctx.obj['BASE_URL'], ctx.obj['HEADLESS'])
 
 
+@log_call
+def read_infile(infile):
+    if infile == "-":
+        return sys.stdin.read()
+    else:
+        with open(infile) as f:
+            return f.read()
+
+
 @group()
 @option('--base_url', default=base_url)
 @option('--headless/--no-headless', default=True)
@@ -29,11 +38,15 @@ def cli(ctx, base_url, headless):
 
 @cli.command()
 @pass_context
-def create(ctx):
+@option("--infile", default=None)
+def create(ctx, infile):
     with start_task(action_type="create pad"):
+        args = []
+        if infile:
+            args.append(read_infile(infile))
+
         with pad_api(ctx) as api:
-            pad_info = api.create_pad()
-            api.set_pad_content("new Pad")
+            pad_info = api.create_pad(*args)
 
     echo(pad_info["url"])
 
@@ -56,12 +69,7 @@ def get_content(ctx, key):
 @option("--infile", default="-")
 def set_content(ctx, key, infile):
     with start_task(action_type="set pad"):
-
-        if infile == "-":
-            content = sys.stdin.read()
-        else:
-            with open(infile) as f:
-                content = f.read()
+        content = read_infile(infile)
 
         with pad_api(ctx) as api:
             api.open_pad(key)
