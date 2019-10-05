@@ -11,8 +11,7 @@ in pkgs.mkShell {
   shellHook = ''
     export PYTHONPATH=./src
     export PATH=${deps.shellPath}
-    #export GIT_SSL_CAINFO=${caBundle};
-    #export NIX_SSL_CERT_FILE=${caBundle};
+    export NIX_SSL_CERT_FILE=${caBundle};
     export SSL_CERT_FILE=${caBundle};
   '';
 }
