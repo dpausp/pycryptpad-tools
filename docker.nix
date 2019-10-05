@@ -7,9 +7,8 @@
 let
   pycryptpad-tools = import ./. { inherit sources; };
   deps = pycryptpad-tools.deps;
-  pkgs = deps.pkgs;
 
-in pkgs.dockerTools.buildLayeredImage {
+in deps.pkgs.dockerTools.buildLayeredImage {
   name = "pycryptpad-tools-cli";
   tag = "latest";
 

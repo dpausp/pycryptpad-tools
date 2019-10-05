@@ -5,18 +5,17 @@ let
   niv = (import sources_.niv { }).niv;
   bandit = (import ./bandit.nix { inherit pkgs; }).packages.bandit;
   eliotPkgs = (import ./eliot.nix { inherit pkgs; }).packages;
+  lib = pkgs.lib;
 
 in rec {
   inherit pkgs;
-  inherit (pkgs) lib;
 
   # Essential Python libs for the application
-  libs = (with pkgs.python37Packages; [
-      click
-      selenium
-    ]) ++ [
-      eliotPkgs.eliot
-    ];
+  libs = with pkgs.python37Packages; [
+    click
+    selenium
+    eliotPkgs.eliot
+  ];
 
   # Can be imported in Python code or run directly as debug tools
   debugLibsAndTools = with pkgs.python37Packages; [
@@ -27,7 +26,6 @@ in rec {
   # Python interpreter that can run the application
   python = pkgs.python37.buildEnv.override {
     extraLibs = libs ++ debugLibsAndTools;
-    ignoreCollisions = true;
   };
 
   # Non-Python dependencies needed for running the application

@@ -1,26 +1,31 @@
-#!/usr/bin/env -S nix-build -o pyenv
-# Provides linters and a Python interpreter with runtime dependencies and test tools.
-# Used for IDE integration (tested with VSCode, Pycharm).
-# Run this file with ./python_dev_env.nix.
-# It creates a directory 'pyenv' that is similar to a Python virtualenv.
-# The 'pyenv' should be picked up py IDE as a possible project interpreter (restart may be required).
+# Build Python package.
+# Can be installed in the current user profile with:
+# nix-env -if .
 { sources ? null }:
 let
- deps = import ./nix/deps.nix { inherit sources; };
- pkgs = deps.pkgs;
+  deps = import ./nix/deps.nix { inherit sources; };
+  pkgs = deps.pkgs;
+  lib = pkgs.lib;
+  version =
+    lib.replaceStrings
+      ["\n"]
+      [""]
+      (lib.readFile
+        (pkgs.runCommand
+          "git-version"
+          { src = ./.; buildInputs = [ pkgs.gitMinimal ]; }
+          "cd $src; git describe --long --tags --dirty --always > $out"));
 
 in pkgs.python37Packages.buildPythonPackage {
-  name = "pycryptpad-tools";
-  version = "0.1";
+  name = "pycryptpad-tools-${version}";
   src = pkgs.nix-gitignore.gitignoreSource [] ./.;
   catchConflicts = false;
-
   propagatedBuildInputs = with deps;
     externalRuntimeDeps ++
     libs ++
     debugLibsAndTools;
 
   passthru = {
-    inherit deps;
+    inherit deps version;
   };
 }
