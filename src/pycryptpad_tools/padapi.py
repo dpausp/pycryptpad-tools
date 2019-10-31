@@ -16,7 +16,7 @@ class PadAPI:
 
     @log_call_no_result
     def __init__(self, base_url, headless=True):
-        self.base_url = base_url
+        self.base_url = base_url.strip("/")
         self.headless = headless
 
     def __enter__(self):
@@ -56,9 +56,13 @@ class PadAPI:
 
     @log_call_no_result
     def create_pad(self, initial_content=""):
-        new_code_pad_url = f"{self.base_url}/code"
-        self.driver.get(new_code_pad_url)
-        WebDriverWait(self.driver, timeout=60).until(url_contains('#'))
+        new_code_pad_url = self.base_url + "/code/"
+        with start_action(action_type="open_new_pad",
+                          new_code_pad_url=new_code_pad_url):
+            self.driver.get(new_code_pad_url)
+            WebDriverWait(self.driver, timeout=60).until(url_contains('#'))
+
+
         self._switch_to_sbox_iframe()
         WebDriverWait(self.driver, timeout=60).until(
             text_to_be_present_in_element((By.CLASS_NAME, 'cp-toolbar-spinner'), "Saved"))
