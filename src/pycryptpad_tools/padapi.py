@@ -1,6 +1,7 @@
-from eliot import log_call
+from functools import partial
 import os
 import time
+from eliot import log_call, start_action
 from selenium import webdriver
 from selenium.webdriver.support.expected_conditions import url_contains, \
     presence_of_element_located, text_to_be_present_in_element
@@ -8,8 +9,12 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 
 
+log_call_no_result = partial(log_call, include_result=False)
+
+
 class PadAPI:
 
+    @log_call_no_result
     def __init__(self, base_url, headless=True):
         self.base_url = base_url
         self.headless = headless
@@ -24,6 +29,7 @@ class PadAPI:
         time.sleep(1)
         self.quit()
 
+    @log_call
     def start_chrome_driver(self):
         options = webdriver.ChromeOptions()
         options.add_argument('-lang=en')
@@ -33,6 +39,7 @@ class PadAPI:
 
         self.driver = webdriver.Chrome(options=options)
 
+    @log_call
     def start_firefox_driver(self):
         if self.headless:
             os.environ['MOZ_HEADLESS'] = '1'
@@ -42,11 +49,12 @@ class PadAPI:
     def quit(self):
         self.driver.quit()
 
+    @log_call_no_result
     def _switch_to_sbox_iframe(self):
         self.driver.switch_to.default_content()
         self.driver.switch_to.frame("sbox-iframe")
 
-    @log_call
+    @log_call_no_result
     def create_pad(self, initial_content=""):
         new_code_pad_url = f"{self.base_url}/code"
         self.driver.get(new_code_pad_url)
@@ -69,7 +77,7 @@ class PadAPI:
             {command}
         ''')
 
-    @log_call
+    @log_call_no_result
     def open_pad(self, key):
         pad_url = f"{self.base_url}/code/#/2/code/edit/{key}/"
         self.driver.get(pad_url)
@@ -77,7 +85,7 @@ class PadAPI:
         WebDriverWait(self.driver, timeout=60).until(
             presence_of_element_located((By.CLASS_NAME, 'cp-loading-hidden')))
 
-    @log_call
+    @log_call_no_result
     def set_pad_content(self, content):
         content = content.replace("\n", "\\n").replace('"', r'\"')
         self._switch_to_sbox_iframe()
