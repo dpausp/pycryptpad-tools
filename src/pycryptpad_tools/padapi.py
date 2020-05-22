@@ -29,7 +29,7 @@ class PadAPI:
         time.sleep(1)
         self.quit()
 
-    @log_call
+    @log_call_no_result
     def start_chrome_driver(self):
         options = webdriver.ChromeOptions()
         options.add_argument('-lang=en')
@@ -39,7 +39,7 @@ class PadAPI:
 
         self.driver = webdriver.Chrome(options=options)
 
-    @log_call
+    @log_call_no_result
     def start_firefox_driver(self):
         if self.headless:
             os.environ['MOZ_HEADLESS'] = '1'
