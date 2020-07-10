@@ -19,12 +19,15 @@ in rec {
   inherit (pkgs) lib glibcLocales;
   inherit (poetry2nix) mkPoetryApplication;
 
+  inherit (poetry2nix.mkPoetryPackages {
+    projectDir = ../.;
+    inherit python;
+  }) poetryPackages pyProject;
+
   # Essential Python libs for the application
   libs =  with python.pkgs; [
-    click
-    selenium
     eliotPkgs.eliot
-  ];
+  ] ++ poetryPackages;
 
   # Can be imported in Python code or run directly as debug tools
   debugLibsAndTools = with python.pkgs; [
