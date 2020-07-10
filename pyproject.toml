@@ -1,3 +1,29 @@
+[tool.poetry]
+name = "pycryptpad-tools"
+version = "20.07.0"
+description = "Some tools for automating Cryptpad"
+readme = "README.md"
+authors = ["Tobias dpausp <dpausp@posteo.de>"]
+keywords = ["cryptpad","pad"]
+license = "AGPL-3.0-or-later"
+classifiers = [
+    "License :: OSI Approved :: GNU Affero General Public License v3 or later (AGPLv3+)",
+    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8"
+]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+selenium = "^3.141.0"
+eliot = "^1.12.0"
+click = "^7.1.2"
+
+[tool.poetry.dev-dependencies]
+
+[tool.poetry.scripts]
+cryptpad-cli = 'pycryptpad_tools.cli:cli'
+
 [build-system]
-requires = ["setuptools >= 40.8.0", "wheel"]
-build-backend = "setuptools.build_meta"
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"

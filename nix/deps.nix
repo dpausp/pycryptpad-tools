@@ -3,38 +3,39 @@ let
   sources_ = if (sources == null) then import ./sources.nix else sources;
   pkgs = import sources_.nixpkgs { };
   niv = (import sources_.niv { }).niv;
-  bandit = (import ./bandit.nix { inherit pkgs; }).packages.bandit;
   eliotPkgs = (import ./eliot.nix { inherit pkgs; }).packages;
-  lib = pkgs.lib;
-  pythonVersion = "37";
-  pythonPackages = pkgs."python${pythonVersion}Packages";
-  python_ = pkgs."python${pythonVersion}";
+  pdbpp = (import ./pdbpp.nix { inherit pkgs; }).packages.pdbpp;
+  inherit ((import "${sources_.poetry2nix}/overlay.nix") pkgs pkgs) poetry2nix poetry;
+  python = pkgs.python38;
 
-  pipWrapper = with pythonPackages; with python; pkgs.writeScriptBin "pip" ''
-    export PYTHONPATH=${setuptools}/${sitePackages}:${wheel}/${sitePackages}
+  poetryWrapper = with python.pkgs; pkgs.writeScriptBin "poetry" ''
+    export PYTHONPATH=
     unset SOURCE_DATE_EPOCH
-    ${pip}/bin/pip "$@"
+    ${poetry}/bin/poetry "$@"
   '';
 
 in rec {
   inherit pkgs;
+  inherit (pkgs) lib glibcLocales;
+  inherit (poetry2nix) mkPoetryApplication;
 
   # Essential Python libs for the application
-  libs =  with pythonPackages; [
+  libs =  with python.pkgs; [
     click
     selenium
     eliotPkgs.eliot
   ];
 
   # Can be imported in Python code or run directly as debug tools
-  debugLibsAndTools = with pythonPackages; [
-    ipdb
+  debugLibsAndTools = with python.pkgs; [
+    pdbpp
     ipython
   ];
 
   # Python interpreter that can run the application
-  python = python_.buildEnv.override {
+  pythonEnv = python.buildEnv.override {
     extraLibs = libs ++ debugLibsAndTools;
+    ignoreCollisions = true;
   };
 
   # Non-Python dependencies needed for running the application
@@ -44,11 +45,11 @@ in rec {
   ];
 
   # Code style and security tools
-  linters = with pythonPackages; [
+  linters = with python.pkgs; [
     bandit
     pylama
     pylint
-    autopep8
+    yapf
   ];
 
   # Various tools for log files, deps management, running scripts and so on
@@ -56,15 +57,14 @@ in rec {
     eliotPkgs.eliot-tree
     entr
     jq
-    pipWrapper
-    pythonPackages.twine
+    poetryWrapper
     niv
     zsh
   ];
 
   # Needed for a development nix shell
   shellInputs =
-    [ python ] ++
+    [ pythonEnv ] ++
     linters ++
     shellTools ++
     externalRuntimeDeps ++

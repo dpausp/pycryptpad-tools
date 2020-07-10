@@ -9,13 +9,13 @@ It's will likely break with future versions, but I hope there will be a better w
 
 ## Tech Stack
 
-* [Python 3.7](https://www.python.org)
+* [Python 3.8](https://www.python.org)
 * Chromium / Chromedriver
-* Build / dependency management: [Nix Package Manager](https://nixos.org/nix)
+* Build / dependency management: [Nix](https://nixos.org/nix)
 
 ## Using it
 
-If you have installed the [Nix Package Manager](https://nixos.org/nix), running the CLI script is easy.
+If you have installed the [Nix](https://nixos.org/nix), running the CLI script is easy.
 Nix installs all dependencies including Chromium / Chromedriver.
 
 1. Clone the repository with:

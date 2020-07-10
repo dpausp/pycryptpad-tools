@@ -1,5 +1,5 @@
 #!/usr/bin/env nix-shell
-#!nix-shell nix/deps.nix -A python -i python
+#!nix-shell nix/deps.nix -A pythonEnv -i python
 
 from pycryptpad_tools.cli import cli
 

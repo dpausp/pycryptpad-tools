@@ -12,6 +12,6 @@ let
 in pkgs.buildEnv {
   name = "pycryptpad-tools-dev-env";
   paths = with deps;
-    [ python ] ++
+    [ pythonEnv ] ++
     linters;
 }
