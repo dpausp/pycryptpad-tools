@@ -1,5 +1,11 @@
 #!/usr/bin/env nix-shell
-#!nix-shell nix/deps.nix -A pythonEnv -i python
+#!nix-shell --quiet -Q -i python
+
+from pathlib import Path
+import sys
+
+path = Path(__file__).absolute().parent / "src"
+sys.path.append(str(path))
 
 from pycryptpad_tools.cli import cli
 
