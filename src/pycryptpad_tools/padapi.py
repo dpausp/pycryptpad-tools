@@ -26,7 +26,7 @@ class PadAPI:
     def __exit__(self, type, value, traceback):
         # Give it some more time to save stuff.
         # Commands should wait until the content is saved, but just in case...
-        time.sleep(1)
+        time.sleep(2)
         self.quit()
 
     @log_call_no_result
@@ -66,7 +66,7 @@ class PadAPI:
         self._switch_to_sbox_iframe()
         WebDriverWait(self.driver, timeout=60).until(
             text_to_be_present_in_element((By.CLASS_NAME, 'cp-toolbar-spinner'), "Saved"))
-        pad_url = self.driver.current_url
+        pad_url = self.driver.current_url.strip('/')
         pad_key = pad_url.split('/')[-2]
         self.set_pad_content(initial_content)
         return {
@@ -96,6 +96,7 @@ class PadAPI:
         self.codemirror_command(f'editor.setValue("{content}");')
         WebDriverWait(self.driver, timeout=60).until(
             text_to_be_present_in_element((By.CLASS_NAME, 'cp-toolbar-spinner'), "Saved"))
+        time.sleep(2)
 
     @log_call
     def get_pad_content(self):
